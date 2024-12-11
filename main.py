@@ -29,9 +29,18 @@ def convert_pages(pdf_pages, fb2):
 
     for i, page_text in enumerate(pdf_pages, start=1):
         section = etree.SubElement(fb2_body, "section")
-        title = etree.SubElement(section, "title")
-        etree.SubElement(title, "p").text = f"Page {i}"
-        etree.SubElement(section, "p").text = page_text.strip()
+
+        page_text = page_text.strip()
+
+        text_lines = page_text.split("\n")
+        first_line = text_lines[0]
+
+        if first_line.isupper():
+            title = etree.SubElement(section, "title")
+            etree.SubElement(title, "p").text = first_line
+            page_text = "\n".join(text_lines[1:])
+
+        etree.SubElement(section, "p").text = page_text
 
         if i % 10 == 0:
             print(f"Wrote {i} pages...")
